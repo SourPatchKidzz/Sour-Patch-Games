@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sour Patch Kid Candy Hunt</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #00d400; /* Green background to fit the "Sour Patch Kid" vibe */
+            margin: 0;
+            padding: 0;
+        }
+
+        canvas {
+            border: 2px solid black;
+            margin-top: 20px;
+        }
+
+        h1 {
+            color: white;
+        }
+
+        .score {
+            font-size: 24px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sour Patch Kid Candy Hunt</h1>
+    <p class="score">Score: 0</p>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+
+    <script>
+        // Set up the canvas and context
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Game settings
+        let kidX = canvas.width / 2, kidY = canvas.height / 2;
+        let kidWidth = 50, kidHeight = 50;
+        let kidSpeed = 5;
+        let candyWidth = 30, candyHeight = 30;
+        let candyX, candyY;
+        let score = 0;
+        const scoreDisplay = document.querySelector('.score');
+
+        // Initialize random candy position
+        function spawnCandy() {
+            candyX = Math.random() * (canvas.width - candyWidth);
+            candyY = Math.random() * (canvas.height - candyHeight);
+        }
+
+        // Draw the Sour Patch Kid (yellow square)
+        function drawKid() {
+            ctx.fillStyle = 'yellow';
+            ctx.fillRect(kidX, kidY, kidWidth, kidHeight);
+        }
+
+        // Draw the candy (red circle)
+        function drawCandy() {
+            ctx.fillStyle = 'red';
+            ctx.beginPath();
+            ctx.arc(candyX + candyWidth / 2, candyY + candyHeight / 2, candyWidth / 2, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Display the score
+        function updateScore() {
+            scoreDisplay.textContent = `Score: ${score}`;
+        }
+
+        // Check if the Sour Patch Kid collides with candy
+        function checkCollision() {
+            if (kidX < candyX + candyWidth && kidX + kidWidth > candyX &&
+                kidY < candyY + candyHeight && kidY + kidHeight > candyY) {
+                score++;
+                spawnCandy(); // Spawn a new candy after collecting the current one
+            }
+        }
+
+        // Handle player movement with arrow keys
+        function moveKid(event) {
+            if (event.key === 'ArrowLeft' && kidX > 0) {
+                kidX -= kidSpeed;
+            }
+            if (event.key === 'ArrowRight' && kidX < canvas.width - kidWidth) {
+                kidX += kidSpeed;
+            }
+            if (event.key === 'ArrowUp' && kidY > 0) {
+                kidY -= kidSpeed;
+            }
+            if (event.key === 'ArrowDown' && kidY < canvas.height - kidHeight) {
+                kidY += kidSpeed;
+            }
+        }
+
+        // Main game loop
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas before drawing
+            drawKid();
+            drawCandy();
+            checkCollision();
+            updateScore();
+            requestAnimationFrame(gameLoop); // Keep the game running
+        }
+
+        // Listen for arrow key movements
+        window.addEventListener('keydown', moveKid);
+
+        // Spawn the first candy and start the game loop
+        spawnCandy();
+        gameLoop();
+
+    </script>
+</body>
+</html>
